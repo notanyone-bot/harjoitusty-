@@ -1,1 +1,3 @@
 # harjoitusty-
+
+teen shakki ohjelman
