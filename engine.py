@@ -3,12 +3,15 @@ class GameState():
         self.board = [
             ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
             ["bP", "bP", "bP", "bP", "bP", "bP", "bP", "bP"],
+            ["--", "--", "--", "wP", "--", "--", "--", "--"],
             ["--", "--", "--", "--", "--", "--", "--", "--"],
             ["--", "--", "--", "--", "--", "--", "--", "--"],
-            ["--", "--", "--", "--", "--", "--", "--", "--"],
-            ["--", "--", "--", "--", "--", "--", "--", "--"],
+            ["--", "--", "--", "bP", "--", "--", "--", "--"],
             ["wP", "wP", "wP", "wP", "wP", "wP", "wP", "wP"],
             ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]]
+        
+        self.moveFunktions = {"P": self.getPawnMoves, "R": self.getRookMoves, "N": self.getKnightMoves,
+                              "B": self.getBishopMoves, "Q": self.getQueenMoves, "K": self.getKingMoves}
         self.whiteToMove = True
         self.moveLog = []
 
@@ -37,10 +40,7 @@ class GameState():
                 turn = self.board[r][c][0]
                 if (turn == "w" and self.whiteToMove) or (turn == "b" and not self.whiteToMove):
                     piece = self.board[r][c][1]
-                    if piece == "p":
-                        self.getPawnMoves(r, c, moves)
-                    elif piece == "R":
-                        self.getRookMoves(r, c, moves)
+                    self.moveFunktions[piece](r, c, moves) # sopiva siirtofunktio piece perusteella
         return moves
 
     # kaikki sotilaan mahdolliset askeleet                  
@@ -50,11 +50,94 @@ class GameState():
                 moves.append(Move((r, c), (r-1, c), self.board))
                 if r == 6 and self.board[r-2][c] == "--":
                     moves.append(Move((r, c), (r-2, c), self.board))
+            if c-1 >= 0: # syö vasemmalle
+                if self.board[r-1][c-1][0] == "b": # vihollisen syöminen
+                    moves.append(Move((r, c), (r-1, c-1), self.board))
+            if c+1 <= 7: # syö oikealle
+                if self.board[r-1][c+1][0] == "b": # vihollisen syöminen
+                    moves.append(Move((r, c), (r-1, c+1), self.board))
+        else: # mustan sotilaan askel
+            if self.board[r+1][c] == "--": # yksi askel
+                moves.append(Move((r, c), (r+1, c), self.board))
+                if r == 1 and self.board[r+2][c] == "--": # kaksi askelta
+                    moves.append(Move((r, c), (r+2, c), self.board))
+            if c+1 >= 0: # syö vasemmalle
+                if self.board[r+1][c-1][0] == "w": # vihollisen syöminen
+                    moves.append(Move((r, c), (r+1, c-1), self.board))
+            if c+1 <= 7: # syö oikealle
+                if self.board[r+1][c+1][0] == "w": # vihollisen syöminen
+                    moves.append(Move((r, c), (r+1, c+1), self.board))
+
+
 
     # kaikki tornin mahdolliset askeleet 
     def getRookMoves(self, r, c, moves):
-        pass
+        directions = ((-1, 0), (0, -1), (1, 0), (0, 1)) # ylös, vasemmalle, alas, oikealle
+        enemyColor = "b" if self.whiteToMove else "w"
+        for d in directions:
+            for i in range(1, 8):
+                endRow = r + d[0] * i
+                endCol = c + d[1] * i
+                if 0 <= endRow < 8 and 0 <= endCol < 8: # laudalla
+                    endPiece = self.board[endRow][endCol]
+                    if endPiece == "--": # tyhjä tila 
+                        moves.append(Move((r, c), (endRow, endCol), self.board))
+                    elif endPiece[0] == enemyColor: # vihollinen auki
+                        moves.append(Move((r, c), (endRow, endCol), self.board))
+                        break
+                    else: # ystävällinen olio
+                        break
+                else: # laudan ulkopuolella
+                    break
 
+    # kaikki ratsun mahdolliset askeleet 
+    def getKnightMoves(self, r, c, moves):
+        knightMoves = ((-2, -1), (-2, 1), (-1, -2), (-1, 2), (1, -2), (1, 2), (2, -1), (2, 1))
+        allyColor = "w" if self.whiteToMove else "b"
+        for m in knightMoves:
+            endRow = r + m[0]
+            endCol = c + m[1]
+            if 0 <= endRow < 8 and 0 <= endCol < 8: # laudalla
+                endPiece = self.board[endRow][endCol]
+                if endPiece[0] != allyColor: # ei oma nappula
+                    moves.append(Move((r, c), (endRow, endCol), self.board))
+
+    # kaikki lähetin mahdolliset askeleet 
+    def getBishopMoves(self, r, c, moves):
+        directions = ((-1, -1), (-1, 1), (1, -1), (1, 1)) 
+        enemyColor = "b" if self.whiteToMove else "w"
+        for d in directions:
+            for i in range(1, 8): # lähetin voi maximissaan liikkua 7 ruutua
+                endRow = r + d[0] * i
+                endCol = c + d[1] * i
+                if 0 <= endRow < 8 and 0 <= endCol < 8: # laudalla
+                    endPiece = self.board[endRow][endCol]
+                    if endPiece == "--": # tyhjä tila 
+                        moves.append(Move((r, c), (endRow, endCol), self.board))
+                    elif endPiece[0] == enemyColor: # vihollinen auki
+                        moves.append(Move((r, c), (endRow, endCol), self.board))
+                        break
+                    else: # ystävällinen olio
+                        break
+                else: # laudan ulkopuolella
+                    break
+    # kaikki kuningataren mahdolliset askeleet 
+    def getQueenMoves(self, r, c, moves):
+        self.getRookMoves(r, c, moves)
+        self.getBishopMoves(r, c, moves)
+
+
+    # kaikki kuninkaan mahdolliset askeleet 
+    def getKingMoves(self, r, c, moves):
+        kingMoves = ((-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1))
+        allyColor = "w" if self.whiteToMove else "b"
+        for i in range(8):
+            endRow = r + kingMoves[i][0]
+            endCol = c + kingMoves[i][1]
+            if 0 <= endRow < 8 and 0 <= endCol < 8: # laudalla
+                endPiece = self.board[endRow][endCol]
+                if endPiece[0] != allyColor: # ei oma nappula
+                    moves.append(Move((r, c), (endRow, endCol), self.board))
 
 class Move():
 
