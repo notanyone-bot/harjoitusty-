@@ -59,11 +59,28 @@ def main():
             moveMade = False
         clock.tick(MAX_FPS)
         p.display.flip()
-        drawGameState(screen, gs)
+        drawGameState(screen, gs, validMoves, sqSelected)
+
+def highlightSqeares(screen, gs, validMoves, sqSelected):
+    if sqSelected != ():
+        r, c = sqSelected
+        if gs.board[r][c][0] == ("w" if gs.whiteToMove else "b"):
+            # maalaa valittu nappula
+            s = p.Surface((SQ_SIZE, SQ_SIZE))
+            s.set_alpha(100)
+            s.fill(p.Color("blue"))
+            screen.blit(s, (c*SQ_SIZE, r*SQ_SIZE))
+            # maalaa mahdolliset liikkeet
+            s.fill(p.Color("yellow"))
+            for move in validMoves:
+                if move.startRow == r and move.startCol == c:
+                    screen.blit(s, (move.endCol*SQ_SIZE, move.endRow*SQ_SIZE))
+
 
 # vastaa graafiksasta
-def drawGameState(screen, gs):
+def drawGameState(screen, gs, validMoves, sqSelected):
     drawBoard(screen) # Draw squares on the board
+    highlightSqeares(screen, gs, validMoves, sqSelected)
     drawPieces(screen, gs.board) # Draw pieces on the board
 
 # piirtäää neliöt lautaan
