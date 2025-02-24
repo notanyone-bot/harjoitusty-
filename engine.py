@@ -16,6 +16,8 @@ class GameState():
         self.moveLog = []
         self.whiteKingLocation = (7, 4)
         self.blackKingLocation = (0, 4)
+        self.checkmate = False
+        self.stalemate = False
         self.inCheck = False
         self.pins = []
         self.checks = []
@@ -81,7 +83,11 @@ class GameState():
                         self.getKingMoves(kingRow, kingCol, moves)
         else:
                 moves = self.getAllPossibleMoves() # ei shakkia, eli kaikki askelet ovat ookoo
-
+        if len(moves) == 0:
+            if self.inCheck:
+                self.checkmate = True
+            else:
+                self.stalemate = True
         return moves
     
 
