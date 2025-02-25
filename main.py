@@ -60,15 +60,20 @@ def main():
                 if e.key == p.K_z: # takaisin kun painaa "z"
                     gs.undoMove() 
                     moveMade = True
+                    gameOver = False
                 elif e.key == p.K_r:  # restarttaa peli jos painaa "r"
                     gs = engine.GameState()
                     validMoves = gs.getValidMoves()
+                    sqSelected = ()
+                    playerClicks = []
                     moveMade = False
                     gameOver = False  # restarttaa game state
 
         # AI askel etsintä
         if not gameOver and not humanTurn:
-            AIMove = chessAI.findRandomMove(validMoves)
+            AIMove = chessAI.findBestMove(gs, validMoves)
+            if AIMove is None:
+                 AIMove = chessAI.findRandomMove(validMoves)
             gs.makeMove(AIMove)
             moveMade = True
 
@@ -76,8 +81,9 @@ def main():
         if moveMade:
             validMoves = gs.getValidMoves()
             moveMade = False
+
         drawGameState(screen, gs, validMoves, sqSelected)
-        print(f"Checkmate: {gs.checkmate}, Stalemate: {gs.stalemate}")
+        
         if gs.checkmate:
             gameOver = True
             if gs.whiteToMove:

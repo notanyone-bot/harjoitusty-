@@ -46,6 +46,9 @@ class GameState():
                 self.whiteKingLocation = (move.startRow, move.startCol)
             elif move.pieceMoved == "bK":
                 self.blackKingLocation = (move.startRow, move.startCol)
+            
+            self.checkmate = False
+            self.stalemate = False
 
     # ottaen huomioon kuninkaan
     def getValidMoves(self):
@@ -267,7 +270,6 @@ class GameState():
             allyColor = "b"
             startRow = self.blackKingLocation[0]
             startCol = self.blackKingLocation[1]
-        print(f"White King Location: {self.whiteKingLocation}, Black King Location: {self.blackKingLocation}")
         directions = ((-1, 0), (0, -1), (1, 0), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1))
         for j in range(len(directions)):
             d = directions[j]
@@ -275,9 +277,7 @@ class GameState():
             for i in range(1, 8):
                 endRow = startRow + d[0] * i
                 endCol = startCol + d[1] * i
-                #print(f"Checking position: Row={endRow}, Col={endCol}, Piece={self.board[endRow][endCol]}")
                 if 0 <= endRow < 8 and 0 <= endCol < 8:
-                    #print(f"Checking position: Row={endRow}, Col={endCol}, Piece={self.board[endRow][endCol]}")
                     endPiece = self.board[endRow][endCol]
                     if endPiece[0] == allyColor and endPiece[1] != "K":
                         if possiblePin == ():
@@ -300,7 +300,6 @@ class GameState():
                         else: # vihollinen ei uhkaa shakkia
                             break
                 else: # laudan ulkopuolella
-                    print(f"Out of bounds: Row={endRow}, Col={endCol}")  # Tähän voit lisätä virheilmoituksen
                     break
         knightMoves = ((-2, -1), (-2, 1), (-1, -2), (-1, 2), (1, -2), (1, 2), (2, -1), (2, 1))
         for m in knightMoves:
@@ -312,7 +311,6 @@ class GameState():
                     inCheck = True
                     checks.append((endRow, endCol, m[0], m[1]))
         
-        print(f"Check: {inCheck}, Pins: {pins}, Checks: {checks}")
         return inCheck, pins, checks
 
 class Move():
