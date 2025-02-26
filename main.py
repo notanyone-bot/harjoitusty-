@@ -56,6 +56,8 @@ def main():
                                 moveMade = True
                                 sqSelected = ()  # nollaa käyttäjän klikit
                                 playerClicks = []
+                        if not moveMade:
+                            playerClicks = [sqSelected]
             elif e.type == p.KEYDOWN:
                 if e.key == p.K_z: # takaisin kun painaa "z"
                     gs.undoMove() 
@@ -71,7 +73,7 @@ def main():
 
         # AI askel etsintä
         if not gameOver and not humanTurn:
-            AIMove = chessAI.findBestMove(gs, validMoves)
+            AIMove = chessAI.findBestMoveMinMax(gs, validMoves)
             if AIMove is None:
                  AIMove = chessAI.findRandomMove(validMoves)
             gs.makeMove(AIMove)
@@ -83,7 +85,7 @@ def main():
             moveMade = False
 
         drawGameState(screen, gs, validMoves, sqSelected)
-        
+
         if gs.checkmate:
             gameOver = True
             if gs.whiteToMove:

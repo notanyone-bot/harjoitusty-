@@ -35,6 +35,10 @@ class GameState():
         elif move.pieceMoved == "bK":
             self.blackKingLocation = (move.endRow, move.endCol)
 
+        # sotilaan promotion
+        if move.isPawnPromotion:
+            self.board[move.endRow][move.endCol] = move.pieceMoved[0] + "Q"
+
     def undoMove(self):
         if len(self.moveLog) != 0:
             move = self.moveLog.pop()
@@ -71,7 +75,7 @@ class GameState():
                 validSquares = [] # hyväksyvät paikat
                 #jos ratsu, täytyy syödä sen tai liikuttaa kuningasta
                 if pieceChecking[1] == "N":
-                    validSquares = [(checkRow), (checkCol)]
+                    validSquares = [(checkRow, checkCol)]
                 else:
                     for i in range(1, 8):
                         validSquare = (kingRow + check[2] * i, kingCol + check[3] * i) # shakki suunnat
@@ -329,6 +333,9 @@ class Move():
         self.endCol = endSq[1]
         self.pieceMoved = board[self.startRow][self.startCol]
         self.pieceCaptured = board[self.endRow][self.endCol]
+        self.isPawnPromotion = False
+        if (self.pieceMoved == "wP" and self.endRow == 0) or (self.pieceMoved == "bP" and self.endRow == 7):
+            self.isPawnPromotion = True
         self.moveID = self.startRow * 1000 + self.startCol * 100 + self.endRow * 10 + self.endCol
         # TÄSSÄ MAHDOLLISET SIIRROT print(self.moveID)
 
