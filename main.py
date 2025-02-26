@@ -1,10 +1,12 @@
 import pygame as p
 import engine, chessAI
 
-WIDTH = HEIGHT = 512
+BOARD_WIDTH = BOARD_HEIGHT = 512
+MOVE_LOG_PANEL_WIDTH = 250
+MOVE_LOG_PANEL_HEIGHT = BOARD_HEIGHT
 DIMENSION = 8
 MAX_FPS = 15
-SQ_SIZE = HEIGHT // DIMENSION
+SQ_SIZE = BOARD_HEIGHT // DIMENSION
 IMAGES = {}
 
 
@@ -17,9 +19,10 @@ def loadImages():
 # user input and update graphics
 def main():
     p.init()
-    screen = p.display.set_mode((WIDTH, HEIGHT))
+    screen = p.display.set_mode((BOARD_WIDTH + MOVE_LOG_PANEL_WIDTH, BOARD_HEIGHT))
     clock = p.time.Clock()
     screen.fill(p.Color("white"))
+    moveLogFont = p.font.SysFont("Arial", 12, False, False)
     gs = engine.GameState()
     validMoves = gs.getValidMoves()
     moveMade = False # merkkimuuttujaa kun siirto tehdään
@@ -41,7 +44,7 @@ def main():
                     location = p.mouse.get_pos()
                     col = location[0]//SQ_SIZE
                     row = location[1]//SQ_SIZE
-                    if sqSelected == (row, col):
+                    if sqSelected == (row, col) or col >= 8:
                         sqSelected = () #valinta pois
                         playerClicks = [] # klikkien nollaaminen
                     else :
@@ -73,7 +76,7 @@ def main():
 
         # AI askel etsintä
         if not gameOver and not humanTurn:
-            AIMove = chessAI.findBestMoveMinMax(gs, validMoves)
+            AIMove = chessAI.findBestMove(gs, validMoves)
             if AIMove is None:
                  AIMove = chessAI.findRandomMove(validMoves)
             gs.makeMove(AIMove)
@@ -84,20 +87,20 @@ def main():
             validMoves = gs.getValidMoves()
             moveMade = False
 
-        drawGameState(screen, gs, validMoves, sqSelected)
+        drawGameState(screen, gs, validMoves, sqSelected, moveLogFont)
 
-        if gs.checkmate:
+        if gs.checkmate or gs.stalemate:
             gameOver = True
-            if gs.whiteToMove:
-                drawText(screen, "Black wins by checkmate")
-            else:
-                drawText(screen, "White wins by checkmate")
-        elif gs.stalemate:
-            gameOver = True
-            drawText(screen, "Stalemate")
-        
+            drawEndGameText(screen, text = "Stalemate" if gs.stalemate else "Black wins by checkmate" if gs.whiteToMove else "White wins by checkmate")
         clock.tick(MAX_FPS)
         p.display.flip()
+
+# vastaa graafiksasta
+def drawGameState(screen, gs, validMoves, sqSelected, moveLogFont):
+    drawBoard(screen) # Draw squares on the board
+    highlightSqeares(screen, gs, validMoves, sqSelected)
+    drawPieces(screen, gs.board) # Draw pieces on the board
+    drawMoveLog(screen, gs, moveLogFont)
 
 def highlightSqeares(screen, gs, validMoves, sqSelected):
     if sqSelected != ():
@@ -115,12 +118,6 @@ def highlightSqeares(screen, gs, validMoves, sqSelected):
                     screen.blit(s, (move.endCol*SQ_SIZE, move.endRow*SQ_SIZE))
 
 
-# vastaa graafiksasta
-def drawGameState(screen, gs, validMoves, sqSelected):
-    drawBoard(screen) # Draw squares on the board
-    highlightSqeares(screen, gs, validMoves, sqSelected)
-    drawPieces(screen, gs.board) # Draw pieces on the board
-
 # piirtäää neliöt lautaan
 def drawBoard(screen):
     colors = [p.Color("white"), p.Color("gray")]
@@ -137,11 +134,28 @@ def drawPieces(screen, board):
             if piece != "--": # If empty square
                 screen.blit(IMAGES[piece], p.Rect(c*SQ_SIZE, r*SQ_SIZE, SQ_SIZE, SQ_SIZE))
 
-def drawText(screen, text):
+def drawMoveLog(screen, gs, font):
+    moveLogRect = p.Rect(BOARD_WIDTH, 0, MOVE_LOG_PANEL_WIDTH, MOVE_LOG_PANEL_HEIGHT)
+    p.draw.rect(screen, p.Color("Black"), moveLogRect)
+    moveLog = gs.moveLog
+    moveTexts = moveLog
+    padding = 5
+    lineSpacing = 2
+    textY = padding
+    for i in range(len(moveTexts)):
+        text = moveTexts[i].getChessNotation()
+        textObject = font.render(text, True, p.Color("White"))
+        textLocation = moveLogRect.move(padding, textY)
+        screen.blit(textObject, textLocation)
+        textY += textObject.get_height() + lineSpacing
+    
+def drawEndGameText(screen, text):
     font = p.font.SysFont("Helvitca", 32, True, False)
-    textObject = font.render(text, 0, p.Color("Black"))
-    textLocation = p.Rect(0, 0, WIDTH, HEIGHT).move(WIDTH/2 - textObject.get_width()/2, HEIGHT/2 - textObject.get_height()/2)
+    textObject = font.render(text, 0, p.Color("Gray"))
+    textLocation = p.Rect(0, 0, BOARD_WIDTH, BOARD_HEIGHT).move(BOARD_WIDTH/2 - textObject.get_width()/2, BOARD_HEIGHT/2 - textObject.get_height()/2)
     screen.blit(textObject, textLocation)
+    textObject = font.render(text, 0, p.Color("Black"))
+    screen.blit(textObject, textLocation.move(2, 2))
 
 if __name__ == "__main__":
     main()
