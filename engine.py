@@ -127,10 +127,8 @@ class GameState():
             moves = self.getAllPossibleMoves() # ei shakkia, eli kaikki askelet ovat ookoo
         if len(moves) == 0:
             if self.inCheck:
-                print("KUNINGAS ON OIKEASTI SHAKISSA –> SHAKKIMATTI")
                 self.checkmate = True
             else:
-                print("KUNINGAS EI OLE SHAKISSA –> PATTITILANNE")
                 self.stalemate = True
         else:
             self.checkmate = False
@@ -324,7 +322,6 @@ class GameState():
                     if not inCheck:
                         moves.append(Move((r, c), (endRow, endCol), self.board))
 
-                    # 🔥 TÄRKEÄ! Palauta kuningas alkuperäiseen paikkaansa!
                     if allyColor == "w":
                         self.whiteKingLocation = originalKingLocation
                     else:
@@ -393,7 +390,6 @@ class GameState():
         pins = []
         checks = []
         inCheck = False
-        print(f"Tarkistetaan shakit: nykyinen shakkitila = {inCheck}")
         if self.whiteToMove:
             enemyColor = "b"
             allyColor = "w"
