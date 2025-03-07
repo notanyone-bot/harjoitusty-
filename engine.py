@@ -127,8 +127,10 @@ class GameState():
             moves = self.getAllPossibleMoves() # ei shakkia, eli kaikki askelet ovat ookoo
         if len(moves) == 0:
             if self.inCheck:
+                print("KUNINGAS ON OIKEASTI SHAKISSA –> SHAKKIMATTI")
                 self.checkmate = True
             else:
+                print("KUNINGAS EI OLE SHAKISSA –> PATTITILANNE")
                 self.stalemate = True
         else:
             self.checkmate = False
@@ -310,17 +312,24 @@ class GameState():
             if 0 <= endRow < 8 and 0 <= endCol < 8: # laudalla
                 endPiece = self.board[endRow][endCol]
                 if endPiece[0] != allyColor: # ei oma nappula
+                    originalKingLocation = self.whiteKingLocation if allyColor == "w" else self.blackKingLocation
+
                     if allyColor == "w":
                         self.whiteKingLocation = (endRow, endCol)
                     else:
                         self.blackKingLocation = (endRow, endCol)
+
                     inCheck, pins, checks = self.checkForPinsAndChecks()
+
                     if not inCheck:
                         moves.append(Move((r, c), (endRow, endCol), self.board))
+
+                    # 🔥 TÄRKEÄ! Palauta kuningas alkuperäiseen paikkaansa!
                     if allyColor == "w":
-                        self.whiteKingLocation = (endRow, endCol)
+                        self.whiteKingLocation = originalKingLocation
                     else:
-                        self.blackKingLocation = (endRow, endCol)
+                        self.blackKingLocation = originalKingLocation
+
         self.getCastleMoves(r, c, moves, allyColor)
 
 
@@ -384,6 +393,7 @@ class GameState():
         pins = []
         checks = []
         inCheck = False
+        print(f"Tarkistetaan shakit: nykyinen shakkitila = {inCheck}")
         if self.whiteToMove:
             enemyColor = "b"
             allyColor = "w"

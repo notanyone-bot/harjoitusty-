@@ -141,10 +141,18 @@ def drawMoveLog(screen, gs, font):
     moveTexts = moveLog
     padding = 5
     lineSpacing = 2
+    columnSpacing = 200
+    maxTextHeight = MOVE_LOG_PANEL_HEIGHT - padding
     textY = padding
+    textX = padding
     for i in range(len(moveTexts)):
         text = moveTexts[i].getChessNotation()
         textObject = font.render(text, True, p.Color("White"))
+        if textY + textObject.get_height() > maxTextHeight:  
+            textY = padding
+            textX += columnSpacing  
+            if textX + columnSpacing > MOVE_LOG_PANEL_WIDTH:  
+                textX = padding
         textLocation = moveLogRect.move(padding, textY)
         screen.blit(textObject, textLocation)
         textY += textObject.get_height() + lineSpacing
