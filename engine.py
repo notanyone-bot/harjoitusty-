@@ -310,17 +310,23 @@ class GameState():
             if 0 <= endRow < 8 and 0 <= endCol < 8: # laudalla
                 endPiece = self.board[endRow][endCol]
                 if endPiece[0] != allyColor: # ei oma nappula
+                    originalKingLocation = self.whiteKingLocation if allyColor == "w" else self.blackKingLocation
+
                     if allyColor == "w":
                         self.whiteKingLocation = (endRow, endCol)
                     else:
                         self.blackKingLocation = (endRow, endCol)
+
                     inCheck, pins, checks = self.checkForPinsAndChecks()
+
                     if not inCheck:
                         moves.append(Move((r, c), (endRow, endCol), self.board))
+
                     if allyColor == "w":
-                        self.whiteKingLocation = (endRow, endCol)
+                        self.whiteKingLocation = originalKingLocation
                     else:
-                        self.blackKingLocation = (endRow, endCol)
+                        self.blackKingLocation = originalKingLocation
+
         self.getCastleMoves(r, c, moves, allyColor)
 
 

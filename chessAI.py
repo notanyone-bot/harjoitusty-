@@ -102,6 +102,13 @@ def findMoveNegaMax(gs, validMoves, depth, turnMultiplier):
 def findMoveNegaMaxAlphaBeta(gs, validMoves, depth, alpha, beta, turnMultiplier):
     global nextMove, counter
     counter += 1
+    if gs.checkmate:
+        return -CHECKMATE
+
+    # Tarkistetaan onko pelaaja shakkitilassa
+    if gs.stalemate:
+        return 0
+    
     if depth == 0:
         return turnMultiplier * scoreBoard(gs)
     
@@ -140,6 +147,8 @@ def scoreBoard(gs):
                 score -= pieceScore[square[1]]
 
     return score
+
+
 def scoreMaterial(board):
     score = 0
     for row in board:
