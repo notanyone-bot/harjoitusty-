@@ -1,52 +1,34 @@
-Vaatimusmäärittely: Shakki-peli
-Projektin Nimi:
-Shakki-peli
+Vaatimusmäärittely
+Opinto-ohjelma: Tietojenkäsittelytiede, kandidaatin tutkinto
 
-Kuvaus:
-Shakki-peli, joka mahdollistaa pelaamisen joko kahdelle pelaajalle tai tekoälyä vastaan. Ohjelma tukee kaikkia perinteisiä shakin sääntöjä, kuten siirtojen tekemistä, nappuloiden syömistä, sekä pelin voittamista tai tasapeliin päättymistä. Peli tukee myös tekoälyä, joka voi pelata joko käyttäjää vastaan tai toista tekoälyä vastaan.
+Projekti on komentoriviltä käytettävä shakki, jossa voi pelata joko tekoälyä vastaan tai kahden tekoälyn välillä. Pelissä on käytössä Minimax-algoritmi ja Alpha-Beta pruning. Pelissä voidaan tehdä siirtoja joko hiirellä tai automaattisesti tekoälyn kanssa. Ohjelma tunnistaa virheelliset siirrot ja estää niiden tekemisen.
 
-Käyttäjävaatimukset:
-Ohjelman tulee tukea perusshakin sääntöjä (esim. liikkeet, erityiset liikkeet kuten "castling", sotilaan ylennys, jne.).
-Käyttäjä voi tehdä siirtoja hiirellä pelilaudalla.
-Mahdollisuus peruuttaa edellinen siirto.
-Pelissä on selkeä graafinen käyttöliittymä, joka näyttää pelilaudan ja nappulat.
-Peli tukee "castling"-liikkeen tekemistä ja seuraamista.
-Peli voi pelata tekoälyä vastaan, joka voi pelata joko käyttäjää vastaan tai toista tekoälyä vastaan.
-Peli tarkistaa säännöt automaattisesti ja ilmoittaa, jos liike on virheellinen (esim. shakki, matti, tasapeli).
-Pelissä on mahdollisuus tarkastella pelin tilaa ja pelin kulkua.
-Toiminnalliset vaatimukset:
-Pelilauta:
+Shakki-peli toimii komentoriviltä ja voidaan käynnistää suorittamalla main.py-tiedoston. Pelissä voidaan pelata joko pelaajaa vastaan tai tekoälyä vastaan. Tekoäly käyttää Minimax-algoritmia ja Alpha-Beta pruningia valitakseen parhaan mahdollisen siirron. Pelissä voidaan myös pelata kahden tekoälyn välillä. Virheelliset siirrot on estetty, joten pelaaja ei voi tehdä laittomia liikkeitä.
 
-Pelissä on 8x8 shakki-lauta, joka on graafisesti esitetty.
-Pelissä näkyvät kaikki nappulat oikeilla paikoillaan.
-Siirrot:
+Peli hallitsee pelilautaa ja pelinappuloita Shakki-taulu-luokan avulla. Pelissä on erillinen Tekoäly-luokka, joka käyttää Minimax-algoritmia tekoälyn päätöksentekoon ja optimoi sen Alpha-Beta pruningilla. Pelaaja-luokka hoitaa pelaajan vuoroa ja siirtojen tekemistä. Pelissä on myös mahdollisuus tarkistaa matitilanteet ja peli voidaan lopettaa, jos toinen pelaaja on voittanut.
 
-Siirtojen tulee olla virheettömiä ja tarkastettavissa.
-Pelissä tulee olla mahdollisuus peruuttaa edellinen siirto.
-Pelissä otetaan huomioon erityiset siirrot, kuten "castling" ja sotilaan ylennys.
-Pelin Logiikka:
+Aikavaativuudet ja suorituskyky
+Minimax-algoritmin aikavaativuus on O(b^d), missä b on haarautumiskerroin (siirtojen määrä) ja d on syvyys. Alpha-Beta pruning optimoi tätä vähentämällä tutkittavien siirtojen määrää, jolloin aikavaativuus on parhaimmillaan O(b^(d/2)). Aikavaativuus riippuu siitä, kuinka pitkälle tekoäly menee miettimään siirtoja. Checkmate-algoritmi ja tornittaminen vaativat lisää optimointia ja debuggausta, koska ne eivät aina tunnista tarkasti matissa tai tornittamisessa olevia tilanteita.
 
-Pelissä tulee tarkastaa säännöt oikein: shakki, matti, tasapeli.
-Pelissä on automaattinen tarkistus, jos siirto on sääntöjen vastainen.
-Pelissä on tuki tasapelille (esim. "stalemate" ja "threefold repetition").
-Graafinen Käyttöliittymä (GUI):
+Tekniset vaatimukset
 
-Pelissä on selkeä pelilauta, jossa näkyvät nappuloiden sijainnit.
-Käyttäjä voi siirtää nappuloita hiirellä.
-Siirrot visualisoidaan pelissä (esim. merkintä siirroista ja nappuloiden syömisestä).
-Tekoäly:
+Sovellus toimii unix-pohjaisissa käyttöjärjestelmissä.
+Python-version tulee olla vähintään 3.10.
+Sovelluksen kieli on suomi.
+Toiminnalliset vaatimukset
 
-Pelissä on mahdollisuus pelata tekoälyä vastaan.
-Tekoäly voi pelata joko käyttäjää vastaan tai toista tekoälyä vastaan.
-Tekoäly voi valita siirron automaattisesti tai sen voi asettaa pelaamaan eri vaikeusasteilla.
-Pelin Hallinta:
+Shakki voidaan käynnistää komentoriviltä.
+Peli voi pelata joko pelaajaa vastaan tai kahden tekoälyn välillä.
+Tekoäly käyttää Minimax-algoritmia ja Alpha-Beta pruningia päätöksentekoon.
+Pelaaja voi tehdä siirtoja joko hiirellä.
+Virheelliset siirrot estetään eikä niitä voida tehdä.
+Pelissä voidaan tarkistaa matitilanteet ja peli voi päättyä mattiin.
+Tornittaminen on tuettu, mutta se tarvitsee tarkempaa virheiden käsittelyä.
+Pelissä voi pelata kahden tekoälyn välillä ja tarkistaa pelitilanteen.
+Sovellus voi tarjota käyttöliittymän, jossa näkyy pelin tila ja siirrot.
+Sovellus tarjoaa myös mahdollisuuden tulostaa pelin tilan ja analysoida tekoälyn siirtojen tehokkuutta.
+Puutteet ja parannusehdotukset
 
-Pelissä on mahdollisuus aloittaa uusi peli.
-Pelissä on mahdollisuus keskeyttää peli ja jatkaa myöhemmin.
-Pelissä on näkyvissä kummankin pelaajan vuoro.
-Pelissä ilmoitetaan, jos jompikumpi pelaaja on voittanut tai jos peli on tasapeli.
-Pelilogiikka ja Tekoäly:
-
-Tekoäly arvioi mahdollisia siirtoja ja tekee pelin kannalta optimaaliset liikkeet.
-Pelissä voi valita joko helpon, keskivaikean tai vaikean tekoälyn.
-Tekoäly voi pelata myös toista tekoälyä vastaan
+Checkmate-algoritmi ja tornittaminen tarvitsevat lisää debuggausta ja optimointia. Tällä hetkellä algoritmit eivät aina tunnista tarkasti matissa tai tornittamisessa olevia tilanteita, mikä voi johtaa virheellisiin pelitiloihin.
+Tekoälyn päätöksenteko voisi hyötyä entistä paremmasta syvyyden optimoinnista, jotta se ei mene liian syvälle tilanteissa, joissa ei ole järkeä.
+Pelissä voisi olla graafinen käyttöliittymä, mutta se ei ole toteutettu tällä hetkellä. Sen sijaan komentorivikäyttöliittymä tarjoaa joustavuutta, mutta vaatii virheiden hallinnan parantamista.
